@@ -33,6 +33,13 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    public User(CreateUserDto userDto){
+        this.name = userDto.name();
+        this.email = userDto.email();
+        this.password = userDto.password();
+        this.userType = userDto.userType();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
