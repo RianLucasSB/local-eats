@@ -1,5 +1,6 @@
 package com.boas.rian.Local.Eats.domain.authentication;
 
+import com.boas.rian.Local.Eats.domain.enums.UserType;
 import com.boas.rian.Local.Eats.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,9 +15,11 @@ public class AuthenticationService implements UserDetailsService {
     private UserRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserDetails user = repository.findByEmail(email);
-        System.out.println(user);
-        return user;
+    public UserDetails loadUserByUsername(String emailWithUserType) throws UsernameNotFoundException {
+        String[] split = emailWithUserType.split(":");
+        String email = split[0];
+        String userType = split[1];
+
+        return repository.findByEmailAndUserType(email, UserType.valueOf(userType));
     }
 }

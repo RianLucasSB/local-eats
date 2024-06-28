@@ -1,5 +1,7 @@
 package com.boas.rian.Local.Eats.infra.security;
 
+import com.boas.rian.Local.Eats.domain.enums.UserType;
+import com.boas.rian.Local.Eats.domain.user.User;
 import com.boas.rian.Local.Eats.domain.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,9 +28,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
         if(token != null){
-            String subject = tokenService.getSubjectFromJwtToken(token);
+            TokenService.TokenWithClaim tokenWithClaim = tokenService.getSubjectFromJwtToken(token);
 
-            UserDetails user = userRepository.findByEmail(subject);
+            UserDetails user = userRepository.findByEmailAndUserType(tokenWithClaim.email(), UserType.valueOf(tokenWithClaim.userType()));
 
             System.out.println(user.getUsername() + user.getPassword());
 

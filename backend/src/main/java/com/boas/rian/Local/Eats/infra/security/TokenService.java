@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.boas.rian.Local.Eats.domain.user.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,9 +23,11 @@ public class TokenService {
     public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
+            System.out.println(user);
             return JWT.create()
                     .withIssuer("local-eats")
                     .withSubject(user.getEmail())
+                    .withClaim("userType", user.getUserType().toString())
                     .withExpiresAt(generateExpiresAt())
                     .sign(algorithm);
         } catch (
@@ -33,18 +36,20 @@ public class TokenService {
         }
     }
 
-    public String getSubjectFromJwtToken(String tokenJwt){
+    public TokenWithClaim getSubjectFromJwtToken(String tokenJwt){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             JWTVerifier verifier = JWT.require(algorithm)
-                    // specify any specific claim validations
                     .withIssuer("local-eats")
-                    // reusable verifier instance
+                    .withClaimPresence("userType")
                     .build();
 
-            return verifier.verify(tokenJwt).getSubject();
+            DecodedJWT verify = verifier.verify(tokenJwt);
+            System.out.println("claim" + verify.getClaim("userType"));
+
+            return new TokenWithClaim(verify.getSubject(), verify.getClaim("userType").asString());
         } catch (JWTVerificationException exception){
-            throw new RuntimeException("Error generating JWT Token");
+            throw new RuntimeException("Error reading JWT Token");
         }
     }
 
@@ -52,4 +57,5 @@ public class TokenService {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
 
+    public record TokenWithClaim(String email, String userType){}
 }

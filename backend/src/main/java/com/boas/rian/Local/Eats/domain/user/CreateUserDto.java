@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated;
 public record CreateUserDto(
         String name,
         String email,
-        String password,
-        UserType userType
+        String password
 ) {
 }

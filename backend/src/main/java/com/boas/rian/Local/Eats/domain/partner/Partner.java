@@ -22,4 +22,9 @@ public class Partner {
     private User user;
 
     private String cnpj;
+
+    public Partner(User user, String cnpj){
+        this.user = user;
+        this.cnpj = cnpj;
+    }
 }

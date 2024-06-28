@@ -1,6 +1,7 @@
 package com.boas.rian.Local.Eats.domain.user;
 
 import com.boas.rian.Local.Eats.domain.enums.UserType;
+import com.boas.rian.Local.Eats.domain.partner.CreatePartnerDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,7 +38,14 @@ public class User implements UserDetails {
         this.name = userDto.name();
         this.email = userDto.email();
         this.password = userDto.password();
-        this.userType = userDto.userType();
+        this.userType = UserType.CUSTOMER;
+    }
+
+    public User(CreatePartnerDto userDto) {
+        this.name = userDto.name();
+        this.email = userDto.email();
+        this.password = userDto.password();
+        this.userType = UserType.PARTNER;
     }
 
     @Override
