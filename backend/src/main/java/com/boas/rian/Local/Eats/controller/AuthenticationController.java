@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -81,6 +82,19 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> loginUser(@RequestBody LoginDto body){
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(body.email() + ":" + UserType.CUSTOMER, body.password());
+
+        var authentication = manager.authenticate(usernamePasswordAuthenticationToken);
+
+        String token = tokenService.generateToken((User) authentication.getPrincipal());
+
+        return ResponseEntity.ok().body(new LoginResponseDto(token));
+
+    }
+
+
+    @PostMapping("/partner/login")
+    public ResponseEntity<LoginResponseDto> loginPartner(@RequestBody LoginDto body){
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(body.email() + ":" + UserType.PARTNER, body.password());
 
         var authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 

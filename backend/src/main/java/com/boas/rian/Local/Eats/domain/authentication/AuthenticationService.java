@@ -1,6 +1,7 @@
 package com.boas.rian.Local.Eats.domain.authentication;
 
 import com.boas.rian.Local.Eats.domain.enums.UserType;
+import com.boas.rian.Local.Eats.domain.exceptions.InvalidCredentialsException;
 import com.boas.rian.Local.Eats.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +21,12 @@ public class AuthenticationService implements UserDetailsService {
         String email = split[0];
         String userType = split[1];
 
-        return repository.findByEmailAndUserType(email, UserType.valueOf(userType));
+        UserDetails user = repository.findByEmailAndUserType(email, UserType.valueOf(userType));
+
+        if(user == null){
+            throw new InvalidCredentialsException("Ïnvalid credentials!");
+        }
+
+        return user;
     }
 }
